@@ -1,4 +1,4 @@
-package br.com.alura.spring.data.jpa.model;
+package br.com.alura.spring.data.jpa.models;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
