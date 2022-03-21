@@ -1,0 +1,15 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-AluraSpringDataJpaApplication<alura-spring-data-jpa>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "mainClass": "br.com.alura.spring.data.jpa.AluraSpringDataJpaApplication",
+      "projectName": "alura-spring-data-jpa",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
