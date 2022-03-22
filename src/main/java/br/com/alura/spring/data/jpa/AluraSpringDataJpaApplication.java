@@ -7,15 +7,23 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import br.com.alura.spring.data.jpa.services.CargoService;
+import br.com.alura.spring.data.jpa.services.FuncionarioService;
+import br.com.alura.spring.data.jpa.services.UnidadeTrabalhoService;
 
 @SpringBootApplication
 public class AluraSpringDataJpaApplication implements CommandLineRunner {
 
-    private boolean keepRunning = true;
+    private boolean keepRunning;
     private CargoService cargoService;
+    private FuncionarioService funcionarioService;
+    private UnidadeTrabalhoService unidadeTrabalhoService;
 
-    public AluraSpringDataJpaApplication(CargoService cargoService) {
+    public AluraSpringDataJpaApplication(CargoService cargoService,
+                                         FuncionarioService funcionarioService,
+                                         UnidadeTrabalhoService unidadeTrabalhoService) {
         this.cargoService = cargoService;
+        this.funcionarioService = funcionarioService;
+        this.unidadeTrabalhoService = unidadeTrabalhoService;
     }
 
     public static void main(String[] args) {
@@ -25,12 +33,15 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         Scanner scanner = new Scanner(System.in);
+        keepRunning = true;
 
         while (keepRunning) {
             System.out.println();
             System.out.println("Qual ação você quer executar?");
             System.out.println("0 - Sair");
             System.out.println("1 - Cargo");
+            System.out.println("2 - Funcionário");
+            System.out.println("3 - Unidade de Trabalho");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -38,6 +49,12 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
             switch (action) {
                 case 1:
                     cargoService.start(scanner);
+                    break;
+                case 2:
+                    funcionarioService.start(scanner);
+                    break;
+                case 3:
+                    unidadeTrabalhoService.start(scanner);
                     break;
                 default:
                     keepRunning = false;
