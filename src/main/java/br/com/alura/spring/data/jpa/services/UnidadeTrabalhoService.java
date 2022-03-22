@@ -39,7 +39,7 @@ public class UnidadeTrabalhoService {
 
             switch (action) {
                 case 1:
-                    save(scanner);
+                    create(scanner);
                     break;
                 case 2:
                     updateById(scanner);
@@ -69,58 +69,21 @@ public class UnidadeTrabalhoService {
         }
     }
 
-    private void save(Scanner scanner) {
+    private UnidadeTrabalho newObj(Scanner scanner) {
         System.out.println("Descrição:");
         String descricao = scanner.nextLine().trim();
         System.out.println("Endereço:");
         String endereco = scanner.nextLine().trim();
-        UnidadeTrabalho unidadeTrabalho = new UnidadeTrabalho(descricao, endereco);
-        unidadeTrabalhoRepository.save(unidadeTrabalho);
-        System.out.println("Salvo!");
+
+        return new UnidadeTrabalho(descricao, endereco);
     }
 
-    private void updateById(Scanner scanner) {
-        System.out.println("ID:");
-        long id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = unidadeTrabalhoRepository.findById(id);
-
-        if (unidadeTrabalhoOptional.isPresent()) {
-            update(scanner, unidadeTrabalhoOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
+    private void create(Scanner scanner) {
+        unidadeTrabalhoRepository.save(newObj(scanner));
+        System.out.println("Unidade salva!");
     }
 
-    private void updateByDescricao(Scanner scanner) {
-        System.out.println("Descrição:");
-        String descricao = scanner.nextLine().trim();
-        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = unidadeTrabalhoRepository.findFirstByDescricaoIgnoreCase(
-            descricao
-        );
-
-        if (unidadeTrabalhoOptional.isPresent()) {
-            update(scanner, unidadeTrabalhoOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
-    }
-
-    private void updateByEndereco(Scanner scanner) {
-        System.out.println("Endereço:");
-        String endereco = scanner.nextLine().trim();
-        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = unidadeTrabalhoRepository.findFirstByEnderecoIgnoreCase(
-            endereco
-        );
-
-        if (unidadeTrabalhoOptional.isPresent()) {
-            update(scanner, unidadeTrabalhoOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
-    }
-
-    private void update(Scanner scanner, UnidadeTrabalho unidadeTrabalho) {
+    private UnidadeTrabalho edit(Scanner scanner, UnidadeTrabalho unidadeTrabalho) {
         System.out.println("Nova Descrição (deixe em branco para manter):");
         String novaDescricao = scanner.nextLine().trim();
         System.out.println("Novo Endereço (deixe em branco para manter):");
@@ -134,8 +97,57 @@ public class UnidadeTrabalhoService {
             unidadeTrabalho.setEndereco(novoEndereco);
         }
 
-        unidadeTrabalhoRepository.save(unidadeTrabalho);
-        System.out.println("Salvo!");
+        return unidadeTrabalho;
+    }
+
+    private void update(Scanner scanner, UnidadeTrabalho unidadeTrabalho) {
+        unidadeTrabalhoRepository.save(edit(scanner, unidadeTrabalho));
+        System.out.println("Unidade atualizada!");
+    }
+
+    private void delete(UnidadeTrabalho unidadeTrabalho) {
+        unidadeTrabalhoRepository.delete(unidadeTrabalho);
+        System.out.println("Unidade removida!");
+    }
+
+    private Optional<UnidadeTrabalho> findById(Scanner scanner) {
+        System.out.println("ID:");
+        long id = scanner.nextInt();
+        scanner.nextLine();
+        return unidadeTrabalhoRepository.findById(id);
+    }
+
+    private Optional<UnidadeTrabalho> findByDescricao(Scanner scanner) {
+        System.out.println("Descrição:");
+        String descricao = scanner.nextLine().trim();
+        return unidadeTrabalhoRepository.findFirstByDescricaoIgnoreCase(descricao);
+    }
+
+    private Optional<UnidadeTrabalho> findByEndereco(Scanner scanner) {
+        System.out.println("Endereço:");
+        String endereco = scanner.nextLine().trim();
+        return unidadeTrabalhoRepository.findFirstByEnderecoIgnoreCase(endereco);
+    }
+
+    private void updateById(Scanner scanner) {
+        updateOptional(scanner, findById(scanner));
+    }
+
+    private void updateByDescricao(Scanner scanner) {
+        updateOptional(scanner, findByDescricao(scanner));
+    }
+
+    private void updateByEndereco(Scanner scanner) {
+        updateOptional(scanner, findByEndereco(scanner));
+    }
+
+    private void updateOptional(Scanner scanner,
+                                Optional<UnidadeTrabalho> unidadeTrabalhoOptional) {
+        if (unidadeTrabalhoOptional.isPresent()) {
+            update(scanner, unidadeTrabalhoOptional.get());
+        } else {
+            System.out.println("Unidade não encontrada.");
+        }
     }
 
     private void findAll() {
@@ -143,49 +155,23 @@ public class UnidadeTrabalhoService {
     }
 
     private void deleteById(Scanner scanner) {
-        System.out.println("ID:");
-        long id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = unidadeTrabalhoRepository.findById(id);
-
-        if (unidadeTrabalhoOptional.isPresent()) {
-            delete(unidadeTrabalhoOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
+        deleteOptional(findById(scanner));
     }
 
     private void deleteByDescricao(Scanner scanner) {
-        System.out.println("Descrição:");
-        String descricao = scanner.nextLine().trim();
-        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = unidadeTrabalhoRepository.findFirstByDescricaoIgnoreCase(
-            descricao
-        );
-
-        if (unidadeTrabalhoOptional.isPresent()) {
-            delete(unidadeTrabalhoOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
+        deleteOptional(findByDescricao(scanner));
     }
 
     private void deleteByEndereco(Scanner scanner) {
-        System.out.println("Endereço:");
-        String endereco = scanner.nextLine().trim();
-        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = unidadeTrabalhoRepository.findFirstByEnderecoIgnoreCase(
-            endereco
-        );
+        deleteOptional(findByEndereco(scanner));
+    }
 
+    private void deleteOptional(Optional<UnidadeTrabalho> unidadeTrabalhoOptional) {
         if (unidadeTrabalhoOptional.isPresent()) {
             delete(unidadeTrabalhoOptional.get());
         } else {
-            System.out.println("Registro não encontrado.");
+            System.out.println("Unidade não encontrada.");
         }
-    }
-
-    private void delete(UnidadeTrabalho unidadeTrabalho) {
-        unidadeTrabalhoRepository.delete(unidadeTrabalho);
-        System.out.println("Removido!");
     }
 
 }

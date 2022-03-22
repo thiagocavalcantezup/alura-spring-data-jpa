@@ -64,6 +64,7 @@ public class CargoService {
     private Cargo newObj(Scanner scanner) {
         System.out.println("Descrição:");
         String descricao = scanner.nextLine().trim();
+
         return new Cargo(descricao);
     }
 
