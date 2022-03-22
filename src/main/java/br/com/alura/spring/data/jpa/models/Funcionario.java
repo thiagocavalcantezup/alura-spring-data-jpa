@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -24,13 +25,18 @@ public class Funcionario {
     private double salario;
     private LocalDate dataContratacao;
 
+    @ManyToOne
+    Cargo cargo;
+
     public Funcionario() {}
 
-    public Funcionario(String nome, String cpf, double salario, LocalDate dataContratacao) {
+    public Funcionario(String nome, String cpf, double salario, LocalDate dataContratacao,
+                       Cargo cargo) {
         this.nome = nome;
         this.cpf = cpf;
         this.salario = salario;
         this.dataContratacao = dataContratacao;
+        this.cargo = cargo;
     }
 
     public long getId() {
@@ -73,6 +79,14 @@ public class Funcionario {
         this.dataContratacao = dataContratacao;
     }
 
+    public Cargo getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(Cargo cargo) {
+        this.cargo = cargo;
+    }
+
     @Override
     public String toString() {
         NumberFormat nformatter = new DecimalFormat("R$#0.00");
@@ -80,7 +94,8 @@ public class Funcionario {
 
         return "id:              " + id + "\nnome:            " + nome + "\ncpf:             " + cpf
                 + "\nsalario:         " + nformatter.format(salario) + "\ndataContratacao: "
-                + dataContratacao.format(dformatter) + "\n";
+                + dataContratacao.format(dformatter) + "\ncargo:           " + cargo.getDescricao()
+                + "\n";
     }
 
 }
