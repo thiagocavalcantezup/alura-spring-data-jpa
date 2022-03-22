@@ -30,6 +30,13 @@ public class Funcionario {
 
     public Funcionario() {}
 
+    public Funcionario(String nome, String cpf, double salario, LocalDate dataContratacao) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.salario = salario;
+        this.dataContratacao = dataContratacao;
+    }
+
     public Funcionario(String nome, String cpf, double salario, LocalDate dataContratacao,
                        Cargo cargo) {
         this.nome = nome;
