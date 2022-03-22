@@ -20,6 +20,7 @@ public class CargoService {
 
     public void start(Scanner scanner) {
         while (keepRunning) {
+            System.out.println();
             System.out.println("Qual ação você quer executar para Cargos?");
             System.out.println("0 - Sair");
             System.out.println("1 - Salvar Cargo");
@@ -82,7 +83,9 @@ public class CargoService {
     private void updateByDescricao(Scanner scanner) {
         System.out.println("Descrição:");
         String descricao = scanner.nextLine().trim();
-        Optional<Cargo> cargoOptional = cargoRepository.findByDescricao(descricao.toUpperCase());
+        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricao(
+            descricao.toUpperCase()
+        );
 
         if (cargoOptional.isPresent()) {
             update(scanner, cargoOptional.get());

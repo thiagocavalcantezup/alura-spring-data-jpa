@@ -27,6 +27,7 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
         Scanner scanner = new Scanner(System.in);
 
         while (keepRunning) {
+            System.out.println();
             System.out.println("Qual ação você quer executar?");
             System.out.println("0 - Sair");
             System.out.println("1 - Cargo");
