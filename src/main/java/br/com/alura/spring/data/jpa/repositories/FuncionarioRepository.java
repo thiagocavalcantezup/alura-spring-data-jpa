@@ -19,4 +19,10 @@ public interface FuncionarioRepository extends CrudRepository<Funcionario, Long>
 
     Set<Funcionario> findAllByCargoDescricao(String descricao);
 
+    Set<Funcionario> findAllByUnidadesTrabalho_Id(long id);
+
+    Set<Funcionario> findAllByUnidadesTrabalho_Descricao(String descricao);
+
+    Set<Funcionario> findAllByUnidadesTrabalho_Endereco(String endereco);
+
 }

@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 
 import br.com.alura.spring.data.jpa.models.Cargo;
 import br.com.alura.spring.data.jpa.models.Funcionario;
+import br.com.alura.spring.data.jpa.models.UnidadeTrabalho;
 import br.com.alura.spring.data.jpa.repositories.CargoRepository;
 import br.com.alura.spring.data.jpa.repositories.FuncionarioRepository;
+import br.com.alura.spring.data.jpa.repositories.UnidadeTrabalhoRepository;
 
 @Service
 public class FuncionarioService {
@@ -19,11 +21,14 @@ public class FuncionarioService {
     private boolean keepRunning;
     private final FuncionarioRepository funcionarioRepository;
     private final CargoRepository cargoRepository;
+    private final UnidadeTrabalhoRepository unidadeTrabalhoRepository;
 
     public FuncionarioService(FuncionarioRepository funcionarioRepository,
-                              CargoRepository cargoRepository) {
+                              CargoRepository cargoRepository,
+                              UnidadeTrabalhoRepository unidadeTrabalhoRepository) {
         this.funcionarioRepository = funcionarioRepository;
         this.cargoRepository = cargoRepository;
+        this.unidadeTrabalhoRepository = unidadeTrabalhoRepository;
     }
 
     public void start(Scanner scanner) {
@@ -41,9 +46,18 @@ public class FuncionarioService {
             System.out.println(" 6 - Listar Todos os Funcionários");
             System.out.println(" 7 - Listar Funcionários por Cargo (busca ID)");
             System.out.println(" 8 - Listar Funcionários por Cargo (busca Descrição)");
-            System.out.println(" 9 - Remover Funcionário (busca ID)");
-            System.out.println("10 - Remover Funcionário (busca Nome)");
-            System.out.println("11 - Remover Funcionário (busca CPF)");
+            System.out.println(" 9 - Listar Funcionários por Unidade (busca ID)");
+            System.out.println("10 - Listar Funcionários por Unidade (busca Descrição)");
+            System.out.println("11 - Listar Funcionários por Unidade (busca Endereço)");
+            System.out.println("12 - Remover Funcionário (busca ID)");
+            System.out.println("13 - Remover Funcionário (busca Nome)");
+            System.out.println("14 - Remover Funcionário (busca CPF)");
+            System.out.println("15 - Adicionar Unidade (busca ID)");
+            System.out.println("16 - Adicionar Unidade (busca Descrição)");
+            System.out.println("17 - Adicionar Unidade (busca Endereço)");
+            System.out.println("18 - Remover Unidade (busca ID)");
+            System.out.println("19 - Remover Unidade (busca Descrição)");
+            System.out.println("20 - Remover Unidade (busca Endereço)");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -74,13 +88,40 @@ public class FuncionarioService {
                     findAllByCargoDescricao(scanner);
                     break;
                 case 9:
-                    deleteById(scanner);
+                    findAllByUnidadeTrabalhoId(scanner);
                     break;
                 case 10:
-                    deleteByNome(scanner);
+                    findAllByUnidadeTrabalhoDescricao(scanner);
                     break;
                 case 11:
+                    findAllByUnidadeTrabalhoEndereco(scanner);
+                    break;
+                case 12:
+                    deleteById(scanner);
+                    break;
+                case 13:
+                    deleteByNome(scanner);
+                    break;
+                case 14:
                     deleteByCpf(scanner);
+                    break;
+                case 15:
+                    addUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    break;
+                case 16:
+                    addUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    break;
+                case 17:
+                    addUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
+                    break;
+                case 18:
+                    removeUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    break;
+                case 19:
+                    removeUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    break;
+                case 20:
+                    removeUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
                     break;
                 default:
                     keepRunning = false;
@@ -89,101 +130,30 @@ public class FuncionarioService {
         }
     }
 
-    private void saveByCargoId(Scanner scanner) {
+    private Funcionario newObj(Scanner scanner) {
         System.out.println("Nome:");
         String nome = scanner.nextLine().trim();
+
         System.out.println("CPF:");
         String cpf = scanner.nextLine().trim().replaceAll("[^0-9]", "");
+
         System.out.println("Salário (separador decimal: ponto):");
         double salario = Double.parseDouble(scanner.nextLine().trim());
+
         System.out.println("Data de Contratação (DD/MM/AAAA):");
         LocalDate dataContratacao = LocalDate.parse(
             scanner.nextLine().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy")
         );
 
-        System.out.println("ID do Cargo:");
-        long id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<Cargo> cargoOptional = cargoRepository.findById(id);
-
-        if (cargoOptional.isPresent()) {
-            Funcionario funcionario = new Funcionario(
-                nome, cpf, salario, dataContratacao, cargoOptional.get()
-            );
-            funcionarioRepository.save(funcionario);
-            System.out.println("Salvo!");
-        } else {
-            System.out.println("Cargo não encontrado.");
-        }
+        return new Funcionario(nome, cpf, salario, dataContratacao);
     }
 
-    private void saveByCargoDescricao(Scanner scanner) {
-        System.out.println("Nome:");
-        String nome = scanner.nextLine().trim();
-        System.out.println("CPF:");
-        String cpf = scanner.nextLine().trim().replaceAll("[^0-9]", "");
-        System.out.println("Salário (separador decimal: ponto):");
-        double salario = Double.parseDouble(scanner.nextLine().trim());
-        System.out.println("Data de Contratação (DD/MM/AAAA):");
-        LocalDate dataContratacao = LocalDate.parse(
-            scanner.nextLine().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        );
-
-        System.out.println("Descrição do Cargo:");
-        String descricao = scanner.nextLine().trim();
-        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricaoIgnoreCase(descricao);
-
-        if (cargoOptional.isPresent()) {
-            Funcionario funcionario = new Funcionario(
-                nome, cpf, salario, dataContratacao, cargoOptional.get()
-            );
-            funcionarioRepository.save(funcionario);
-            System.out.println("Salvo!");
-        } else {
-            System.out.println("Cargo não encontrado.");
-        }
+    private void create(Funcionario funcionario) {
+        funcionarioRepository.save(funcionario);
+        System.out.println("Funcionário(a) salvo(a)!");
     }
 
-    private void updateById(Scanner scanner) {
-        System.out.println("ID:");
-        long id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<Funcionario> funcionarioOptional = funcionarioRepository.findById(id);
-
-        if (funcionarioOptional.isPresent()) {
-            update(scanner, funcionarioOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
-    }
-
-    private void updateByNome(Scanner scanner) {
-        System.out.println("Nome:");
-        String nome = scanner.nextLine().trim();
-        Optional<Funcionario> funcionarioOptional = funcionarioRepository.findFirstByNomeIgnoreCase(
-            nome
-        );
-
-        if (funcionarioOptional.isPresent()) {
-            update(scanner, funcionarioOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
-    }
-
-    private void updateByCpf(Scanner scanner) {
-        System.out.println("CPF:");
-        String cpf = scanner.nextLine().trim().replaceAll("[^0-9]", "");
-        Optional<Funcionario> funcionarioOptional = funcionarioRepository.findFirstByCpf(cpf);
-
-        if (funcionarioOptional.isPresent()) {
-            update(scanner, funcionarioOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
-    }
-
-    private void update(Scanner scanner, Funcionario funcionario) {
+    private Funcionario edit(Scanner scanner, Funcionario funcionario) {
         System.out.println("Novo Nome (deixe em branco para manter):");
         String novoNome = scanner.nextLine().trim();
 
@@ -226,8 +196,105 @@ public class FuncionarioService {
             funcionario.setDataContratacao(novaDataContratacao);
         }
 
-        funcionarioRepository.save(funcionario);
-        System.out.println("Salvo!");
+        return funcionario;
+    }
+
+    private void update(Scanner scanner, Funcionario funcionario) {
+        funcionarioRepository.save(edit(scanner, funcionario));
+        System.out.println("Funcionário(a) atualizado(a)!");
+    }
+
+    private void delete(Funcionario funcionario) {
+        funcionarioRepository.delete(funcionario);
+        System.out.println("Funcionário(a) removido(a)!");
+    }
+
+    private Optional<Funcionario> findById(Scanner scanner) {
+        System.out.println("ID do(a) Funcionário(a):");
+        long id = scanner.nextInt();
+        scanner.nextLine();
+        return funcionarioRepository.findById(id);
+    }
+
+    private Optional<Funcionario> findByNome(Scanner scanner) {
+        System.out.println("Nome do(a) Funcionário(a):");
+        String nome = scanner.nextLine().trim();
+        return funcionarioRepository.findFirstByNomeIgnoreCase(nome);
+    }
+
+    private Optional<Funcionario> findByCpf(Scanner scanner) {
+        System.out.println("CPF do(a) Funcionário(a):");
+        String cpf = scanner.nextLine().trim().replaceAll("[^0-9]", "");
+        return funcionarioRepository.findFirstByCpf(cpf);
+    }
+
+    private Optional<Cargo> findCargoById(Scanner scanner) {
+        System.out.println("ID do Cargo:");
+        long id = scanner.nextInt();
+        scanner.nextLine();
+        return cargoRepository.findById(id);
+    }
+
+    private Optional<Cargo> findCargoByDescricao(Scanner scanner) {
+        System.out.println("Descrição do Cargo:");
+        String descricao = scanner.nextLine().trim();
+        return cargoRepository.findFirstByDescricaoIgnoreCase(descricao);
+    }
+
+    private Optional<UnidadeTrabalho> findUnidadeTrabalhoById(Scanner scanner) {
+        System.out.println("ID da Unidade:");
+        long id = scanner.nextInt();
+        scanner.nextLine();
+        return unidadeTrabalhoRepository.findById(id);
+    }
+
+    private Optional<UnidadeTrabalho> findUnidadeTrabalhoByDescricao(Scanner scanner) {
+        System.out.println("Descrição da Unidade:");
+        String descricao = scanner.nextLine().trim();
+        return unidadeTrabalhoRepository.findFirstByDescricaoIgnoreCase(descricao);
+    }
+
+    private Optional<UnidadeTrabalho> findUnidadeTrabalhoByEndereco(Scanner scanner) {
+        System.out.println("Endereço da Unidade:");
+        String endereeco = scanner.nextLine().trim();
+        return unidadeTrabalhoRepository.findFirstByEnderecoIgnoreCase(endereeco);
+    }
+
+    private void saveByCargoId(Scanner scanner) {
+        saveByCargoOptional(newObj(scanner), findCargoById(scanner));
+    }
+
+    private void saveByCargoDescricao(Scanner scanner) {
+        saveByCargoOptional(newObj(scanner), findCargoByDescricao(scanner));
+    }
+
+    private void saveByCargoOptional(Funcionario funcionario, Optional<Cargo> cargoOptional) {
+        if (cargoOptional.isPresent()) {
+            funcionario.setCargo(cargoOptional.get());
+            create(funcionario);
+        } else {
+            System.out.println("Cargo não encontrado.");
+        }
+    }
+
+    private void updateById(Scanner scanner) {
+        updateOptional(scanner, findById(scanner));
+    }
+
+    private void updateByNome(Scanner scanner) {
+        updateOptional(scanner, findByNome(scanner));
+    }
+
+    private void updateByCpf(Scanner scanner) {
+        updateOptional(scanner, findByCpf(scanner));
+    }
+
+    private void updateOptional(Scanner scanner, Optional<Funcionario> funcionarioOptional) {
+        if (funcionarioOptional.isPresent()) {
+            update(scanner, funcionarioOptional.get());
+        } else {
+            System.out.println("Funcionário(a) não encontrado.");
+        }
     }
 
     private void findAll() {
@@ -235,73 +302,147 @@ public class FuncionarioService {
     }
 
     private void findAllByCargoId(Scanner scanner) {
-        System.out.println("ID do Cargo:");
-        long id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<Cargo> cargoOptional = cargoRepository.findById(id);
+        Optional<Cargo> cargoOptional = findCargoById(scanner);
 
         if (cargoOptional.isPresent()) {
-            funcionarioRepository.findAllByCargoId(id).forEach(System.out::println);
+            funcionarioRepository.findAllByCargoId(cargoOptional.get().getId())
+                                 .forEach(System.out::println);
         } else {
             System.out.println("Cargo não encontrado.");
         }
-
     }
 
     private void findAllByCargoDescricao(Scanner scanner) {
-        System.out.println("Descrição do Cargo:");
-        String descricao = scanner.nextLine().trim();
-        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricaoIgnoreCase(descricao);
+        Optional<Cargo> cargoOptional = findCargoByDescricao(scanner);
 
         if (cargoOptional.isPresent()) {
-            funcionarioRepository.findAllByCargoDescricao(descricao).forEach(System.out::println);
+            funcionarioRepository.findAllByCargoDescricao(cargoOptional.get().getDescricao())
+                                 .forEach(System.out::println);
         } else {
             System.out.println("Cargo não encontrado.");
+        }
+    }
+
+    private void findAllByUnidadeTrabalhoId(Scanner scanner) {
+        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = findUnidadeTrabalhoById(scanner);
+
+        if (unidadeTrabalhoOptional.isPresent()) {
+            funcionarioRepository.findAllByUnidadesTrabalho_Id(
+                unidadeTrabalhoOptional.get().getId()
+            ).forEach(System.out::println);
+        } else {
+            System.out.println("Unidade não encontrada.");
+        }
+    }
+
+    private void findAllByUnidadeTrabalhoDescricao(Scanner scanner) {
+        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = findUnidadeTrabalhoByDescricao(scanner);
+
+        if (unidadeTrabalhoOptional.isPresent()) {
+            funcionarioRepository.findAllByUnidadesTrabalho_Descricao(
+                unidadeTrabalhoOptional.get().getDescricao()
+            ).forEach(System.out::println);
+        } else {
+            System.out.println("Unidade não encontrada.");
+        }
+    }
+
+    private void findAllByUnidadeTrabalhoEndereco(Scanner scanner) {
+        Optional<UnidadeTrabalho> unidadeTrabalhoOptional = findUnidadeTrabalhoByEndereco(scanner);
+
+        if (unidadeTrabalhoOptional.isPresent()) {
+            funcionarioRepository.findAllByUnidadesTrabalho_Endereco(
+                unidadeTrabalhoOptional.get().getEndereco()
+            ).forEach(System.out::println);
+        } else {
+            System.out.println("Unidade não encontrada.");
         }
     }
 
     private void deleteById(Scanner scanner) {
-        System.out.println("ID:");
-        long id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<Funcionario> funcionarioOptional = funcionarioRepository.findById(id);
-
-        if (funcionarioOptional.isPresent()) {
-            delete(funcionarioOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
+        deleteOptional(findById(scanner));
     }
 
     private void deleteByNome(Scanner scanner) {
-        System.out.println("Nome:");
-        String nome = scanner.nextLine().trim();
-        Optional<Funcionario> funcionarioOptional = funcionarioRepository.findFirstByNomeIgnoreCase(
-            nome
-        );
-
-        if (funcionarioOptional.isPresent()) {
-            delete(funcionarioOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
+        deleteOptional(findByNome(scanner));
     }
 
     private void deleteByCpf(Scanner scanner) {
-        System.out.println("CPF:");
-        String cpf = scanner.nextLine().trim().replaceAll("[^0-9]", "");
-        Optional<Funcionario> funcionarioOptional = funcionarioRepository.findFirstByCpf(cpf);
+        deleteOptional(findByCpf(scanner));
+    }
 
+    private void deleteOptional(Optional<Funcionario> funcionarioOptional) {
         if (funcionarioOptional.isPresent()) {
             delete(funcionarioOptional.get());
         } else {
-            System.out.println("Registro não encontrado.");
+            System.out.println("Funcionário(a) não encontrado.");
         }
     }
 
-    private void delete(Funcionario funcionario) {
-        funcionarioRepository.delete(funcionario);
-        System.out.println("Removido!");
+    private void addUnidadeTrabalhoByUnidadeTrabalhoId(Scanner scanner) {
+        addUnidadeTrabalhoById(scanner, findUnidadeTrabalhoById(scanner));
+    }
+
+    private void addUnidadeTrabalhoByUnidadeTrabalhoDescricao(Scanner scanner) {
+        addUnidadeTrabalhoById(scanner, findUnidadeTrabalhoByDescricao(scanner));
+    }
+
+    private void addUnidadeTrabalhoByUnidadeTrabalhoEndereco(Scanner scanner) {
+        addUnidadeTrabalhoById(scanner, findUnidadeTrabalhoByEndereco(scanner));
+    }
+
+    private void addUnidadeTrabalhoById(Scanner scanner,
+                                        Optional<UnidadeTrabalho> unidadeTrabalhoOptional) {
+        Optional<Funcionario> funcionarioOptional = findById(scanner);
+
+        if (funcionarioOptional.isPresent()) {
+            if (unidadeTrabalhoOptional.isPresent()) {
+                Funcionario funcionario = funcionarioOptional.get();
+                UnidadeTrabalho unidadeTrabalho = unidadeTrabalhoOptional.get();
+                unidadeTrabalho.getFuncionarios().add(funcionario);
+                funcionario.getUnidadesTrabalho().add(unidadeTrabalho);
+                unidadeTrabalhoRepository.save(unidadeTrabalho);
+                funcionarioRepository.save(funcionario);
+                System.out.println("Unidade adicionada!");
+            } else {
+                System.out.println("Unidade não encontrada.");
+            }
+        } else {
+            System.out.println("Funcionário(a) não encontrado.");
+        }
+    }
+
+    private void removeUnidadeTrabalhoByUnidadeTrabalhoId(Scanner scanner) {
+        removeUnidadeTrabalhoById(scanner, findUnidadeTrabalhoById(scanner));
+    }
+
+    private void removeUnidadeTrabalhoByUnidadeTrabalhoDescricao(Scanner scanner) {
+        removeUnidadeTrabalhoById(scanner, findUnidadeTrabalhoByDescricao(scanner));
+    }
+
+    private void removeUnidadeTrabalhoByUnidadeTrabalhoEndereco(Scanner scanner) {
+        removeUnidadeTrabalhoById(scanner, findUnidadeTrabalhoByEndereco(scanner));
+    }
+
+    private void removeUnidadeTrabalhoById(Scanner scanner,
+                                           Optional<UnidadeTrabalho> unidadeTrabalhoOptional) {
+        Optional<Funcionario> funcionarioOptional = findById(scanner);
+
+        if (funcionarioOptional.isPresent()) {
+            if (unidadeTrabalhoOptional.isPresent()) {
+                Funcionario funcionario = funcionarioOptional.get();
+                UnidadeTrabalho unidadeTrabalho = unidadeTrabalhoOptional.get();
+                unidadeTrabalho.getFuncionarios().remove(funcionario);
+                funcionario.getUnidadesTrabalho().remove(unidadeTrabalho);
+                unidadeTrabalhoRepository.save(unidadeTrabalho);
+                funcionarioRepository.save(funcionario);
+                System.out.println("Unidade removida!");
+            } else {
+                System.out.println("Unidade não encontrada.");
+            }
+        } else {
+            System.out.println("Funcionário(a) não encontrado.");
+        }
     }
 
 }
