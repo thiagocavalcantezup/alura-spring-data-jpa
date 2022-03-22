@@ -37,7 +37,7 @@ public class CargoService {
 
             switch (action) {
                 case 1:
-                    save(scanner);
+                    create(scanner);
                     break;
                 case 2:
                     updateById(scanner);
@@ -61,45 +61,62 @@ public class CargoService {
         }
     }
 
-    private void save(Scanner scanner) {
+    private Cargo newObj(Scanner scanner) {
         System.out.println("Descrição:");
         String descricao = scanner.nextLine().trim();
-        Cargo cargo = new Cargo(descricao);
-        cargoRepository.save(cargo);
-        System.out.println("Salvo!");
+        return new Cargo(descricao);
     }
 
-    private void updateById(Scanner scanner) {
-        System.out.println("ID:");
-        long id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<Cargo> cargoOptional = cargoRepository.findById(id);
-
-        if (cargoOptional.isPresent()) {
-            update(scanner, cargoOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
+    private void create(Scanner scanner) {
+        cargoRepository.save(newObj(scanner));
+        System.out.println("Cargo salvo!");
     }
 
-    private void updateByDescricao(Scanner scanner) {
-        System.out.println("Descrição:");
-        String descricao = scanner.nextLine().trim();
-        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricaoIgnoreCase(descricao);
-
-        if (cargoOptional.isPresent()) {
-            update(scanner, cargoOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
-    }
-
-    private void update(Scanner scanner, Cargo cargo) {
+    private Cargo edit(Scanner scanner, Cargo cargo) {
         System.out.println("Nova Descrição:");
         String novaDescricao = scanner.nextLine().trim();
         cargo.setDescricao(novaDescricao);
-        cargoRepository.save(cargo);
-        System.out.println("Salvo!");
+
+        return cargo;
+    }
+
+    private void update(Scanner scanner, Cargo cargo) {
+        cargoRepository.save(edit(scanner, cargo));
+        System.out.println("Cargo atualizado!");
+    }
+
+    private void delete(Cargo cargo) {
+        cargoRepository.delete(cargo);
+        System.out.println("Cargo removido!");
+    }
+
+    private Optional<Cargo> findById(Scanner scanner) {
+        System.out.println("ID:");
+        long id = scanner.nextInt();
+        scanner.nextLine();
+        return cargoRepository.findById(id);
+    }
+
+    private Optional<Cargo> findByDescricao(Scanner scanner) {
+        System.out.println("Descrição:");
+        String descricao = scanner.nextLine().trim();
+        return cargoRepository.findFirstByDescricaoIgnoreCase(descricao);
+    }
+
+    private void updateById(Scanner scanner) {
+        updateOptional(scanner, findById(scanner));
+    }
+
+    private void updateByDescricao(Scanner scanner) {
+        updateOptional(scanner, findByDescricao(scanner));
+    }
+
+    private void updateOptional(Scanner scanner, Optional<Cargo> cargoOptional) {
+        if (cargoOptional.isPresent()) {
+            update(scanner, cargoOptional.get());
+        } else {
+            System.out.println("Cargo não encontrado.");
+        }
     }
 
     private void findAll() {
@@ -107,33 +124,19 @@ public class CargoService {
     }
 
     private void deleteById(Scanner scanner) {
-        System.out.println("ID:");
-        long id = scanner.nextInt();
-        scanner.nextLine();
-        Optional<Cargo> cargoOptional = cargoRepository.findById(id);
-
-        if (cargoOptional.isPresent()) {
-            delete(cargoOptional.get());
-        } else {
-            System.out.println("Registro não encontrado.");
-        }
+        deleteOptional(findById(scanner));
     }
 
     private void deleteByDescricao(Scanner scanner) {
-        System.out.println("Descrição:");
-        String descricao = scanner.nextLine().trim();
-        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricaoIgnoreCase(descricao);
+        deleteOptional(findByDescricao(scanner));
+    }
 
+    private void deleteOptional(Optional<Cargo> cargoOptional) {
         if (cargoOptional.isPresent()) {
             delete(cargoOptional.get());
         } else {
-            System.out.println("Registro não encontrado.");
+            System.out.println("Cargo não encontrado.");
         }
-    }
-
-    private void delete(Cargo cargo) {
-        cargoRepository.delete(cargo);
-        System.out.println("Removido!");
     }
 
 }
