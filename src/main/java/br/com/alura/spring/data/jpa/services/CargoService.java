@@ -11,7 +11,7 @@ import br.com.alura.spring.data.jpa.repositories.CargoRepository;
 @Service
 public class CargoService {
 
-    private boolean keepRunning = true;
+    private boolean keepRunning;
     private final CargoRepository cargoRepository;
 
     public CargoService(CargoRepository cargoRepository) {
@@ -19,6 +19,8 @@ public class CargoService {
     }
 
     public void start(Scanner scanner) {
+        keepRunning = true;
+
         while (keepRunning) {
             System.out.println();
             System.out.println("Qual ação você quer executar para Cargos?");
