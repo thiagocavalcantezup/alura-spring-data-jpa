@@ -32,10 +32,12 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
             System.out.println("1 - Cargo");
 
             int action = scanner.nextInt();
+            scanner.nextLine();
 
             switch (action) {
                 case 1:
                     cargoService.start(scanner);
+                    break;
                 default:
                     keepRunning = false;
                     break;
