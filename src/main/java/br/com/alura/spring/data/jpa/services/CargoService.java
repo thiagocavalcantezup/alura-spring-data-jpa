@@ -27,6 +27,8 @@ public class CargoService {
             System.out.println("2 - Atualizar Cargo (busca ID)");
             System.out.println("3 - Atualizar Cargo (busca Descrição)");
             System.out.println("4 - Listar Cargos");
+            System.out.println("5 - Remover Cargo (busca ID)");
+            System.out.println("6 - Remover Cargo (busca Descrição)");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -44,6 +46,12 @@ public class CargoService {
                 case 4:
                     findAll();
                     break;
+                case 5:
+                    deleteById(scanner);
+                    break;
+                case 6:
+                    deleteByDescricao(scanner);
+                    break;
                 default:
                     keepRunning = false;
                     break;
@@ -55,14 +63,6 @@ public class CargoService {
         System.out.println("Descrição:");
         String descricao = scanner.nextLine().trim();
         Cargo cargo = new Cargo(descricao);
-        cargoRepository.save(cargo);
-        System.out.println("Salvo!");
-    }
-
-    private void update(Scanner scanner, Cargo cargo) {
-        System.out.println("Nova Descrição:");
-        String novaDescricao = scanner.nextLine().trim();
-        cargo.setDescricao(novaDescricao);
         cargoRepository.save(cargo);
         System.out.println("Salvo!");
     }
@@ -94,10 +94,48 @@ public class CargoService {
         }
     }
 
+    private void update(Scanner scanner, Cargo cargo) {
+        System.out.println("Nova Descrição:");
+        String novaDescricao = scanner.nextLine().trim();
+        cargo.setDescricao(novaDescricao);
+        cargoRepository.save(cargo);
+        System.out.println("Salvo!");
+    }
+
     private void findAll() {
-        for (Cargo cargo : cargoRepository.findAll()) {
-            System.out.println(cargo.getId() + " " + cargo.getDescricao());
+        cargoRepository.findAll().forEach(System.out::println);
+    }
+
+    private void deleteById(Scanner scanner) {
+        System.out.println("ID:");
+        long id = scanner.nextInt();
+        scanner.nextLine();
+        Optional<Cargo> cargoOptional = cargoRepository.findById(id);
+
+        if (cargoOptional.isPresent()) {
+            delete(cargoOptional.get());
+        } else {
+            System.out.println("Registro não encontrado.");
         }
+    }
+
+    private void deleteByDescricao(Scanner scanner) {
+        System.out.println("Descrição:");
+        String descricao = scanner.nextLine().trim();
+        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricao(
+            descricao.toUpperCase()
+        );
+
+        if (cargoOptional.isPresent()) {
+            delete(cargoOptional.get());
+        } else {
+            System.out.println("Registro não encontrado.");
+        }
+    }
+
+    private void delete(Cargo cargo) {
+        cargoRepository.delete(cargo);
+        System.out.println("Removido!");
     }
 
 }
