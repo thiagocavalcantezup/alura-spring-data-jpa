@@ -10,6 +10,6 @@ import br.com.alura.spring.data.jpa.models.Cargo;
 @Repository
 public interface CargoRepository extends CrudRepository<Cargo, Long> {
 
-    Optional<Cargo> findFirstByDescricao(String descricao);
+    Optional<Cargo> findFirstByDescricaoIgnoreCase(String descricao);
 
 }

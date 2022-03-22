@@ -83,9 +83,7 @@ public class CargoService {
     private void updateByDescricao(Scanner scanner) {
         System.out.println("Descrição:");
         String descricao = scanner.nextLine().trim();
-        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricao(
-            descricao.toUpperCase()
-        );
+        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricaoIgnoreCase(descricao);
 
         if (cargoOptional.isPresent()) {
             update(scanner, cargoOptional.get());
@@ -122,9 +120,7 @@ public class CargoService {
     private void deleteByDescricao(Scanner scanner) {
         System.out.println("Descrição:");
         String descricao = scanner.nextLine().trim();
-        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricao(
-            descricao.toUpperCase()
-        );
+        Optional<Cargo> cargoOptional = cargoRepository.findFirstByDescricaoIgnoreCase(descricao);
 
         if (cargoOptional.isPresent()) {
             delete(cargoOptional.get());
