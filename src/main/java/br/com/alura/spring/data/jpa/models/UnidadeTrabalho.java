@@ -1,9 +1,14 @@
 package br.com.alura.spring.data.jpa.models;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -16,6 +21,9 @@ public class UnidadeTrabalho {
 
     private String descricao;
     private String endereco;
+
+    @ManyToMany(mappedBy = "unidadesTrabalho", fetch = FetchType.EAGER)
+    Set<Funcionario> funcionarios = new HashSet<>();
 
     public UnidadeTrabalho() {}
 
@@ -46,6 +54,14 @@ public class UnidadeTrabalho {
 
     public void setEndereco(String endereco) {
         this.endereco = endereco;
+    }
+
+    public Set<Funcionario> getFuncionarios() {
+        return funcionarios;
+    }
+
+    public void setFuncionarios(Set<Funcionario> funcionarios) {
+        this.funcionarios = funcionarios;
     }
 
     @Override

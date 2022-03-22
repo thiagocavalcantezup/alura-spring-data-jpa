@@ -4,11 +4,18 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -27,6 +34,10 @@ public class Funcionario {
 
     @ManyToOne
     Cargo cargo;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "funcionarios_unidades", joinColumns = @JoinColumn(name = "funcionario_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "unidade_trabalho_id", referencedColumnName = "id"))
+    Set<UnidadeTrabalho> unidadesTrabalho = new HashSet<>();
 
     public Funcionario() {}
 
@@ -94,14 +105,26 @@ public class Funcionario {
         this.cargo = cargo;
     }
 
+    public Set<UnidadeTrabalho> getUnidadesTrabalho() {
+        return unidadesTrabalho;
+    }
+
+    public void setUnidadesTrabalho(Set<UnidadeTrabalho> unidadesTrabalho) {
+        this.unidadesTrabalho = unidadesTrabalho;
+    }
+
     @Override
     public String toString() {
         NumberFormat nformatter = new DecimalFormat("R$#0.00");
         DateTimeFormatter dformatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String unidades = getUnidadesTrabalho().stream()
+                                               .map(UnidadeTrabalho::getDescricao)
+                                               .collect(Collectors.joining(", "));
 
         return "id:              " + id + "\nnome:            " + nome + "\ncpf:             " + cpf
                 + "\nsalario:         " + nformatter.format(salario) + "\ndataContratacao: "
                 + dataContratacao.format(dformatter) + "\ncargo:           " + cargo.getDescricao()
+                + "\nunidades:        " + unidades + "\n";
     }
 
     @Override
