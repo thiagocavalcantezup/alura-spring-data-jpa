@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,8 @@ import br.com.alura.spring.data.jpa.models.FuncionarioDTO;
 import br.com.alura.spring.data.jpa.models.FuncionarioProjecao;
 
 @Repository
-public interface FuncionarioRepository extends PagingAndSortingRepository<Funcionario, Long> {
+public interface FuncionarioRepository extends PagingAndSortingRepository<Funcionario, Long>,
+        JpaSpecificationExecutor<Funcionario> {
 
     Optional<Funcionario> findFirstByNomeIgnoreCase(String nome);
 

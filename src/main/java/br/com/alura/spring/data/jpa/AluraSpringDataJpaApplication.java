@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import br.com.alura.spring.data.jpa.services.CargoService;
 import br.com.alura.spring.data.jpa.services.FuncionarioService;
+import br.com.alura.spring.data.jpa.services.RelatorioDinamicoService;
 import br.com.alura.spring.data.jpa.services.RelatorioService;
 import br.com.alura.spring.data.jpa.services.UnidadeTrabalhoService;
 
@@ -19,15 +20,18 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
     private FuncionarioService funcionarioService;
     private UnidadeTrabalhoService unidadeTrabalhoService;
     private RelatorioService relatorioService;
+    private RelatorioDinamicoService relatorioDinamicoService;
 
     public AluraSpringDataJpaApplication(CargoService cargoService,
                                          FuncionarioService funcionarioService,
                                          UnidadeTrabalhoService unidadeTrabalhoService,
-                                         RelatorioService relatorioService) {
+                                         RelatorioService relatorioService,
+                                         RelatorioDinamicoService relatorioDinamicoService) {
         this.cargoService = cargoService;
         this.funcionarioService = funcionarioService;
         this.unidadeTrabalhoService = unidadeTrabalhoService;
         this.relatorioService = relatorioService;
+        this.relatorioDinamicoService = relatorioDinamicoService;
     }
 
     public static void main(String[] args) {
@@ -47,6 +51,7 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
             System.out.println("2 - Funcionário");
             System.out.println("3 - Unidade de Trabalho");
             System.out.println("4 - Relatórios");
+            System.out.println("5 - Relatórios Dinâmicos");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -63,6 +68,9 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
                     break;
                 case 4:
                     relatorioService.start(scanner);
+                    break;
+                case 5:
+                    relatorioDinamicoService.start(scanner);
                     break;
                 default:
                     keepRunning = false;
