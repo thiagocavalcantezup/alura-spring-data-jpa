@@ -29,7 +29,7 @@ public interface FuncionarioRepository extends CrudRepository<Funcionario, Long>
 
     Set<Funcionario> findAllByUnidadesTrabalho_Endereco(String endereco);
 
-    // Funcionario report query
+    /* Funcionario report query */
 
     // Derived
     Set<Funcionario> findAllByNomeIgnoreCaseLikeAndDataContratacaoLessThanAndSalarioGreaterThan(String nome,
@@ -39,5 +39,11 @@ public interface FuncionarioRepository extends CrudRepository<Funcionario, Long>
     // JPQL
     @Query("SELECT f FROM Funcionario f WHERE f.nome LIKE :nome AND f.dataContratacao < :dataContratacao AND f.salario > :salario")
     Set<Funcionario> funcionarioReport(String nome, LocalDate dataContratacao, double salario);
+
+    /* ************************ */
+
+    // Native Query
+    @Query(value = "SELECT * FROM funcionarios AS f WHERE f.data_contratacao > :dataContratacao", nativeQuery = true)
+    Set<Funcionario> findAllByDataContratacaoMaiorQue(LocalDate dataContratacao);
 
 }

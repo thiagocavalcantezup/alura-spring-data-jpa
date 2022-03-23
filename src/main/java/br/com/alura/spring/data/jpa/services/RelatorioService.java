@@ -9,24 +9,16 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import br.com.alura.spring.data.jpa.models.Funcionario;
-import br.com.alura.spring.data.jpa.repositories.CargoRepository;
 import br.com.alura.spring.data.jpa.repositories.FuncionarioRepository;
-import br.com.alura.spring.data.jpa.repositories.UnidadeTrabalhoRepository;
 
 @Service
 public class RelatorioService {
 
     private boolean keepRunning;
-    private final CargoRepository cargoRepository;
     private final FuncionarioRepository funcionarioRepository;
-    private final UnidadeTrabalhoRepository unidadeTrabalhoRepository;
 
-    public RelatorioService(CargoRepository cargoRepository,
-                            FuncionarioRepository funcionarioRepository,
-                            UnidadeTrabalhoRepository unidadeTrabalhoRepository) {
-        this.cargoRepository = cargoRepository;
+    public RelatorioService(FuncionarioRepository funcionarioRepository) {
         this.funcionarioRepository = funcionarioRepository;
-        this.unidadeTrabalhoRepository = unidadeTrabalhoRepository;
     }
 
     public void start(Scanner scanner) {

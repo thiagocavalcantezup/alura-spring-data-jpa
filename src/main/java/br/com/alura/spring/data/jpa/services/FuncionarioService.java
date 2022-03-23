@@ -1,6 +1,8 @@
 package br.com.alura.spring.data.jpa.services;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
@@ -44,21 +46,22 @@ public class FuncionarioService {
             System.out.println(" 4 - Atualizar Funcionário (busca Nome)");
             System.out.println(" 5 - Atualizar Funcionário (busca CPF)");
             System.out.println(" 6 - Listar Funcionários (Todos)");
-            System.out.println(" 7 - Listar Funcionários (busca Nome)");
-            System.out.println(" 8 - Listar Funcionários por Cargo (busca ID)");
-            System.out.println(" 9 - Listar Funcionários por Cargo (busca Descrição)");
-            System.out.println("10 - Listar Funcionários por Unidade (busca ID)");
-            System.out.println("11 - Listar Funcionários por Unidade (busca Descrição)");
-            System.out.println("12 - Listar Funcionários por Unidade (busca Endereço)");
-            System.out.println("13 - Remover Funcionário (busca ID)");
-            System.out.println("14 - Remover Funcionário (busca Nome)");
-            System.out.println("15 - Remover Funcionário (busca CPF)");
-            System.out.println("16 - Adicionar Unidade (busca ID)");
-            System.out.println("17 - Adicionar Unidade (busca Descrição)");
-            System.out.println("18 - Adicionar Unidade (busca Endereço)");
-            System.out.println("19 - Remover Unidade (busca ID)");
-            System.out.println("20 - Remover Unidade (busca Descrição)");
-            System.out.println("21 - Remover Unidade (busca Endereço)");
+            System.out.println(" 7 - Listar Funcionários (busca Nome (~))");
+            System.out.println(" 8 - Listar Funcionários (busca Data de Contratacão (>))");
+            System.out.println(" 9 - Listar Funcionários por Cargo (busca ID)");
+            System.out.println("10 - Listar Funcionários por Cargo (busca Descrição)");
+            System.out.println("11 - Listar Funcionários por Unidade (busca ID)");
+            System.out.println("12 - Listar Funcionários por Unidade (busca Descrição)");
+            System.out.println("13 - Listar Funcionários por Unidade (busca Endereço)");
+            System.out.println("14 - Remover Funcionário (busca ID)");
+            System.out.println("15 - Remover Funcionário (busca Nome)");
+            System.out.println("16 - Remover Funcionário (busca CPF)");
+            System.out.println("17 - Adicionar Unidade (busca ID)");
+            System.out.println("18 - Adicionar Unidade (busca Descrição)");
+            System.out.println("19 - Adicionar Unidade (busca Endereço)");
+            System.out.println("20 - Remover Unidade (busca ID)");
+            System.out.println("21 - Remover Unidade (busca Descrição)");
+            System.out.println("22 - Remover Unidade (busca Endereço)");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -86,45 +89,48 @@ public class FuncionarioService {
                     findAllByNome(scanner);
                     break;
                 case 8:
-                    findAllByCargoId(scanner);
+                    findAllByDataContratacao(scanner);
                     break;
                 case 9:
-                    findAllByCargoDescricao(scanner);
+                    findAllByCargoId(scanner);
                     break;
                 case 10:
-                    findAllByUnidadeTrabalhoId(scanner);
+                    findAllByCargoDescricao(scanner);
                     break;
                 case 11:
-                    findAllByUnidadeTrabalhoDescricao(scanner);
+                    findAllByUnidadeTrabalhoId(scanner);
                     break;
                 case 12:
-                    findAllByUnidadeTrabalhoEndereco(scanner);
+                    findAllByUnidadeTrabalhoDescricao(scanner);
                     break;
                 case 13:
-                    deleteById(scanner);
+                    findAllByUnidadeTrabalhoEndereco(scanner);
                     break;
                 case 14:
-                    deleteByNome(scanner);
+                    deleteById(scanner);
                     break;
                 case 15:
-                    deleteByCpf(scanner);
+                    deleteByNome(scanner);
                     break;
                 case 16:
-                    addUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    deleteByCpf(scanner);
                     break;
                 case 17:
-                    addUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
                     break;
                 case 18:
-                    addUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
                     break;
                 case 19:
-                    removeUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
                     break;
                 case 20:
-                    removeUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    removeUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
                     break;
                 case 21:
+                    removeUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    break;
+                case 22:
                     removeUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
                     break;
                 default:
@@ -309,6 +315,21 @@ public class FuncionarioService {
         System.out.println("Nome do(a) Funcionário(a):");
         String nome = scanner.nextLine().trim();
         funcionarioRepository.findAllByNomeIgnoreCaseLike("%" + nome + "%")
+                             .forEach(System.out::println);
+    }
+
+    private void findAllByDataContratacao(Scanner scanner) {
+        System.out.println("Data de Contratação (DD/MM/AAAA):");
+        LocalDate dataContratacao;
+        try {
+            dataContratacao = LocalDate.parse(
+                scanner.nextLine().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            );
+        } catch (DateTimeParseException e) {
+            dataContratacao = LocalDate.of(Year.MIN_VALUE, Month.JANUARY, 1);
+        }
+
+        funcionarioRepository.findAllByDataContratacaoMaiorQue(dataContratacao)
                              .forEach(System.out::println);
     }
 
