@@ -15,6 +15,8 @@ public interface FuncionarioRepository extends CrudRepository<Funcionario, Long>
 
     Optional<Funcionario> findFirstByCpf(String cpf);
 
+    Set<Funcionario> findAllByNomeIgnoreCaseLike(String nome);
+
     Set<Funcionario> findAllByCargoId(long id);
 
     Set<Funcionario> findAllByCargoDescricao(String descricao);
