@@ -51,22 +51,24 @@ public class FuncionarioService {
             System.out.println(" 5 - Atualizar Funcionário (busca CPF)");
             System.out.println(" 6 - Listar Funcionários (Todos)");
             System.out.println(" 7 - Listar Funcionários (por Página)");
-            System.out.println(" 8 - Listar Funcionários (busca Nome (~))");
-            System.out.println(" 9 - Listar Funcionários (busca Data de Contratacão (>))");
-            System.out.println("10 - Listar Funcionários por Cargo (busca ID)");
-            System.out.println("11 - Listar Funcionários por Cargo (busca Descrição)");
-            System.out.println("12 - Listar Funcionários por Unidade (busca ID)");
-            System.out.println("13 - Listar Funcionários por Unidade (busca Descrição)");
-            System.out.println("14 - Listar Funcionários por Unidade (busca Endereço)");
-            System.out.println("15 - Remover Funcionário (busca ID)");
-            System.out.println("16 - Remover Funcionário (busca Nome)");
-            System.out.println("17 - Remover Funcionário (busca CPF)");
-            System.out.println("18 - Adicionar Unidade (busca ID)");
-            System.out.println("19 - Adicionar Unidade (busca Descrição)");
-            System.out.println("20 - Adicionar Unidade (busca Endereço)");
-            System.out.println("21 - Remover Unidade (busca ID)");
-            System.out.println("22 - Remover Unidade (busca Descrição)");
-            System.out.println("23 - Remover Unidade (busca Endereço)");
+            System.out.println(" 8 - Listar Funcionários (por Página, ordenados por Nome)");
+            System.out.println(" 9 - Listar Funcionários (por Página, ordenados por Salário)");
+            System.out.println("10 - Listar Funcionários (busca Nome (~))");
+            System.out.println("11 - Listar Funcionários (busca Data de Contratacão (>))");
+            System.out.println("12 - Listar Funcionários por Cargo (busca ID)");
+            System.out.println("13 - Listar Funcionários por Cargo (busca Descrição)");
+            System.out.println("14 - Listar Funcionários por Unidade (busca ID)");
+            System.out.println("15 - Listar Funcionários por Unidade (busca Descrição)");
+            System.out.println("16 - Listar Funcionários por Unidade (busca Endereço)");
+            System.out.println("17 - Remover Funcionário (busca ID)");
+            System.out.println("18 - Remover Funcionário (busca Nome)");
+            System.out.println("19 - Remover Funcionário (busca CPF)");
+            System.out.println("20 - Adicionar Unidade (busca ID)");
+            System.out.println("21 - Adicionar Unidade (busca Descrição)");
+            System.out.println("22 - Adicionar Unidade (busca Endereço)");
+            System.out.println("23 - Remover Unidade (busca ID)");
+            System.out.println("24 - Remover Unidade (busca Descrição)");
+            System.out.println("25 - Remover Unidade (busca Endereço)");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -94,51 +96,57 @@ public class FuncionarioService {
                     findAllPaged(scanner);
                     break;
                 case 8:
-                    findAllByNome(scanner);
+                    findAllPagedSortedByNome(scanner);
                     break;
                 case 9:
-                    findAllByDataContratacao(scanner);
+                    findAllPagedSortedBySalario(scanner);
                     break;
                 case 10:
-                    findAllByCargoId(scanner);
+                    findAllByNome(scanner);
                     break;
                 case 11:
-                    findAllByCargoDescricao(scanner);
+                    findAllByDataContratacao(scanner);
                     break;
                 case 12:
-                    findAllByUnidadeTrabalhoId(scanner);
+                    findAllByCargoId(scanner);
                     break;
                 case 13:
-                    findAllByUnidadeTrabalhoDescricao(scanner);
+                    findAllByCargoDescricao(scanner);
                     break;
                 case 14:
-                    findAllByUnidadeTrabalhoEndereco(scanner);
+                    findAllByUnidadeTrabalhoId(scanner);
                     break;
                 case 15:
-                    deleteById(scanner);
+                    findAllByUnidadeTrabalhoDescricao(scanner);
                     break;
                 case 16:
-                    deleteByNome(scanner);
+                    findAllByUnidadeTrabalhoEndereco(scanner);
                     break;
                 case 17:
-                    deleteByCpf(scanner);
+                    deleteById(scanner);
                     break;
                 case 18:
-                    addUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    deleteByNome(scanner);
                     break;
                 case 19:
-                    addUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    deleteByCpf(scanner);
                     break;
                 case 20:
-                    addUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
                     break;
                 case 21:
-                    removeUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
                     break;
                 case 22:
-                    removeUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
                     break;
                 case 23:
+                    removeUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    break;
+                case 24:
+                    removeUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    break;
+                case 25:
                     removeUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
                     break;
                 default:
@@ -326,6 +334,50 @@ public class FuncionarioService {
         scanner.nextLine();
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.unsorted());
+        Page<Funcionario> page = funcionarioRepository.findAll(pageable);
+
+        System.out.println();
+        System.out.println("Página: " + (page.getNumber() + 1) + "/" + page.getTotalPages());
+        System.out.println(
+            "Elementos: " + (page.getNumber() * pageSize + 1) + "-"
+                    + ((page.getNumber() + 1) * pageSize) + "/" + page.getTotalElements()
+        );
+        System.out.println();
+
+        funcionarioRepository.findAll(pageable).forEach(System.out::println);
+    }
+
+    private void findAllPagedSortedByNome(Scanner scanner) {
+        System.out.println("Página (início em 1):");
+        int pageNumber = scanner.nextInt();
+        int pageSize = 5;
+        scanner.nextLine();
+
+        Pageable pageable = PageRequest.of(
+            pageNumber - 1, pageSize, Sort.by(Sort.Direction.ASC, "nome")
+        );
+        Page<Funcionario> page = funcionarioRepository.findAll(pageable);
+
+        System.out.println();
+        System.out.println("Página: " + (page.getNumber() + 1) + "/" + page.getTotalPages());
+        System.out.println(
+            "Elementos: " + (page.getNumber() * pageSize + 1) + "-"
+                    + ((page.getNumber() + 1) * pageSize) + "/" + page.getTotalElements()
+        );
+        System.out.println();
+
+        funcionarioRepository.findAll(pageable).forEach(System.out::println);
+    }
+
+    private void findAllPagedSortedBySalario(Scanner scanner) {
+        System.out.println("Página (início em 1):");
+        int pageNumber = scanner.nextInt();
+        int pageSize = 5;
+        scanner.nextLine();
+
+        Pageable pageable = PageRequest.of(
+            pageNumber - 1, pageSize, Sort.by(Sort.Direction.ASC, "salario")
+        );
         Page<Funcionario> page = funcionarioRepository.findAll(pageable);
 
         System.out.println();
