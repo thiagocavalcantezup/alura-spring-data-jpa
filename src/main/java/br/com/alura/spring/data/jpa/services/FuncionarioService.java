@@ -8,6 +8,10 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import br.com.alura.spring.data.jpa.models.Cargo;
@@ -46,22 +50,23 @@ public class FuncionarioService {
             System.out.println(" 4 - Atualizar Funcionário (busca Nome)");
             System.out.println(" 5 - Atualizar Funcionário (busca CPF)");
             System.out.println(" 6 - Listar Funcionários (Todos)");
-            System.out.println(" 7 - Listar Funcionários (busca Nome (~))");
-            System.out.println(" 8 - Listar Funcionários (busca Data de Contratacão (>))");
-            System.out.println(" 9 - Listar Funcionários por Cargo (busca ID)");
-            System.out.println("10 - Listar Funcionários por Cargo (busca Descrição)");
-            System.out.println("11 - Listar Funcionários por Unidade (busca ID)");
-            System.out.println("12 - Listar Funcionários por Unidade (busca Descrição)");
-            System.out.println("13 - Listar Funcionários por Unidade (busca Endereço)");
-            System.out.println("14 - Remover Funcionário (busca ID)");
-            System.out.println("15 - Remover Funcionário (busca Nome)");
-            System.out.println("16 - Remover Funcionário (busca CPF)");
-            System.out.println("17 - Adicionar Unidade (busca ID)");
-            System.out.println("18 - Adicionar Unidade (busca Descrição)");
-            System.out.println("19 - Adicionar Unidade (busca Endereço)");
-            System.out.println("20 - Remover Unidade (busca ID)");
-            System.out.println("21 - Remover Unidade (busca Descrição)");
-            System.out.println("22 - Remover Unidade (busca Endereço)");
+            System.out.println(" 7 - Listar Funcionários (por Página)");
+            System.out.println(" 8 - Listar Funcionários (busca Nome (~))");
+            System.out.println(" 9 - Listar Funcionários (busca Data de Contratacão (>))");
+            System.out.println("10 - Listar Funcionários por Cargo (busca ID)");
+            System.out.println("11 - Listar Funcionários por Cargo (busca Descrição)");
+            System.out.println("12 - Listar Funcionários por Unidade (busca ID)");
+            System.out.println("13 - Listar Funcionários por Unidade (busca Descrição)");
+            System.out.println("14 - Listar Funcionários por Unidade (busca Endereço)");
+            System.out.println("15 - Remover Funcionário (busca ID)");
+            System.out.println("16 - Remover Funcionário (busca Nome)");
+            System.out.println("17 - Remover Funcionário (busca CPF)");
+            System.out.println("18 - Adicionar Unidade (busca ID)");
+            System.out.println("19 - Adicionar Unidade (busca Descrição)");
+            System.out.println("20 - Adicionar Unidade (busca Endereço)");
+            System.out.println("21 - Remover Unidade (busca ID)");
+            System.out.println("22 - Remover Unidade (busca Descrição)");
+            System.out.println("23 - Remover Unidade (busca Endereço)");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -86,51 +91,54 @@ public class FuncionarioService {
                     findAll();
                     break;
                 case 7:
-                    findAllByNome(scanner);
+                    findAllPaged(scanner);
                     break;
                 case 8:
-                    findAllByDataContratacao(scanner);
+                    findAllByNome(scanner);
                     break;
                 case 9:
-                    findAllByCargoId(scanner);
+                    findAllByDataContratacao(scanner);
                     break;
                 case 10:
-                    findAllByCargoDescricao(scanner);
+                    findAllByCargoId(scanner);
                     break;
                 case 11:
-                    findAllByUnidadeTrabalhoId(scanner);
+                    findAllByCargoDescricao(scanner);
                     break;
                 case 12:
-                    findAllByUnidadeTrabalhoDescricao(scanner);
+                    findAllByUnidadeTrabalhoId(scanner);
                     break;
                 case 13:
-                    findAllByUnidadeTrabalhoEndereco(scanner);
+                    findAllByUnidadeTrabalhoDescricao(scanner);
                     break;
                 case 14:
-                    deleteById(scanner);
+                    findAllByUnidadeTrabalhoEndereco(scanner);
                     break;
                 case 15:
-                    deleteByNome(scanner);
+                    deleteById(scanner);
                     break;
                 case 16:
-                    deleteByCpf(scanner);
+                    deleteByNome(scanner);
                     break;
                 case 17:
-                    addUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    deleteByCpf(scanner);
                     break;
                 case 18:
-                    addUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
                     break;
                 case 19:
-                    addUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
                     break;
                 case 20:
-                    removeUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
+                    addUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
                     break;
                 case 21:
-                    removeUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    removeUnidadeTrabalhoByUnidadeTrabalhoId(scanner);
                     break;
                 case 22:
+                    removeUnidadeTrabalhoByUnidadeTrabalhoDescricao(scanner);
+                    break;
+                case 23:
                     removeUnidadeTrabalhoByUnidadeTrabalhoEndereco(scanner);
                     break;
                 default:
@@ -309,6 +317,26 @@ public class FuncionarioService {
 
     private void findAll() {
         funcionarioRepository.findAll().forEach(System.out::println);
+    }
+
+    private void findAllPaged(Scanner scanner) {
+        System.out.println("Página (início em 1):");
+        int pageNumber = scanner.nextInt();
+        int pageSize = 5;
+        scanner.nextLine();
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.unsorted());
+        Page<Funcionario> page = funcionarioRepository.findAll(pageable);
+
+        System.out.println();
+        System.out.println("Página: " + (page.getNumber() + 1) + "/" + page.getTotalPages());
+        System.out.println(
+            "Elementos: " + (page.getNumber() * pageSize + 1) + "-"
+                    + ((page.getNumber() + 1) * pageSize) + "/" + page.getTotalElements()
+        );
+        System.out.println();
+
+        funcionarioRepository.findAll(pageable).forEach(System.out::println);
     }
 
     private void findAllByNome(Scanner scanner) {
