@@ -9,6 +9,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import br.com.alura.spring.data.jpa.models.Funcionario;
+import br.com.alura.spring.data.jpa.models.FuncionarioDTO;
+import br.com.alura.spring.data.jpa.models.FuncionarioProjecao;
 
 @Repository
 public interface FuncionarioRepository extends PagingAndSortingRepository<Funcionario, Long> {
@@ -45,5 +47,13 @@ public interface FuncionarioRepository extends PagingAndSortingRepository<Funcio
     // Native Query
     @Query(value = "SELECT * FROM funcionarios AS f WHERE f.data_contratacao > :dataContratacao", nativeQuery = true)
     Set<Funcionario> findAllByDataContratacaoMaiorQue(LocalDate dataContratacao);
+
+    // Projection + Native Query
+    @Query(value = "SELECT f.id, f.nome, f.salario FROM funcionarios AS f", nativeQuery = true)
+    Set<FuncionarioProjecao> findAllIdNomeSalarioProjecao();
+
+    // DTO + JPQL Query
+    @Query("SELECT new br.com.alura.spring.data.jpa.models.FuncionarioDTO(f.id, f.nome, f.salario) FROM Funcionario f")
+    Set<FuncionarioDTO> findAllIdNomeSalarioDTO();
 
 }

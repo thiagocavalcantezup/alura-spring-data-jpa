@@ -1,5 +1,7 @@
 package br.com.alura.spring.data.jpa.services;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -29,11 +31,13 @@ public class RelatorioService {
             System.out.println("Qual ação você quer executar para Cargos?");
             System.out.println("0 - Sair");
             System.out.println(
-                "1 - Relatório Funcionários: Derived (Nome (~), Data de Contratação (<), Salário (>))"
+                "1 - Relatório Funcionários: Derived (Buscas: Nome (~), Data de Contratação (<), Salário (>))"
             );
             System.out.println(
-                "2 - Relatório Funcionários: JPQL (Nome (~), Data de Contratação (<), Salário (>))"
+                "2 - Relatório Funcionários: JPQL (Buscas: Nome (~), Data de Contratação (<), Salário (>))"
             );
+            System.out.println("3 - Relatório Funcionários: Projeção (Id, Nome, Salário)");
+            System.out.println("4 - Relatório Funcionários: DTO (Id, Nome, Salário)");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -44,6 +48,12 @@ public class RelatorioService {
                     break;
                 case 2:
                     relatorioFuncionariosJpql(scanner);
+                    break;
+                case 3:
+                    relatorioFuncionariosListaProjecao(scanner);
+                    break;
+                case 4:
+                    relatorioFuncionariosListaDTO(scanner);
                     break;
                 default:
                     keepRunning = false;
@@ -99,6 +109,21 @@ public class RelatorioService {
         );
 
         funcionarios.forEach(System.out::println);
+    }
+
+    private void relatorioFuncionariosListaProjecao(Scanner scanner) {
+        funcionarioRepository.findAllIdNomeSalarioProjecao().forEach(func -> {
+            NumberFormat nformatter = new DecimalFormat("R$#0.00");
+
+            System.out.println(
+                "id:      " + func.getId() + "\nnome:    " + func.getNome() + "\nsalario: "
+                        + nformatter.format(func.getSalario()) + "\n"
+            );
+        });
+    }
+
+    private void relatorioFuncionariosListaDTO(Scanner scanner) {
+        funcionarioRepository.findAllIdNomeSalarioDTO().forEach(System.out::println);
     }
 
 }
