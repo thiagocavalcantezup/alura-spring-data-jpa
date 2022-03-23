@@ -1,8 +1,6 @@
 package br.com.alura.spring.data.jpa.services;
 
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
@@ -39,7 +37,10 @@ public class RelatorioService {
             System.out.println("Qual ação você quer executar para Cargos?");
             System.out.println("0 - Sair");
             System.out.println(
-                "1 - Relatório Funcionários (Nome (~), Data de Contratação (<), Salário (>))"
+                "1 - Relatório Funcionários: Derived (Nome (~), Data de Contratação (<), Salário (>))"
+            );
+            System.out.println(
+                "2 - Relatório Funcionários: JPQL (Nome (~), Data de Contratação (<), Salário (>))"
             );
 
             int action = scanner.nextInt();
@@ -47,7 +48,10 @@ public class RelatorioService {
 
             switch (action) {
                 case 1:
-                    relatorioFuncionarios(scanner);
+                    relatorioFuncionariosDerived(scanner);
+                    break;
+                case 2:
+                    relatorioFuncionariosJpql(scanner);
                     break;
                 default:
                     keepRunning = false;
@@ -56,29 +60,49 @@ public class RelatorioService {
         }
     }
 
-    private void relatorioFuncionarios(Scanner scanner) {
+    private String readFuncionarioNome(Scanner scanner) {
         System.out.println("Nome do(a) Funcionário(a):");
-        String nome = "%" + scanner.nextLine().trim() + "%";
+        return "%" + scanner.nextLine().trim() + "%";
+    }
 
-        System.out.println("Salário (separador decimal: ponto):");
-        Double salario;
-        try {
-            salario = Double.parseDouble(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            salario = 0.0;
-        }
-
+    private LocalDate readFuncionarioDataContratacao(Scanner scanner) {
         System.out.println("Data de Contratação (DD/MM/AAAA):");
-        LocalDate dataContratacao;
         try {
-            dataContratacao = LocalDate.parse(
+            return LocalDate.parse(
                 scanner.nextLine().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy")
             );
         } catch (DateTimeParseException e) {
-            dataContratacao = LocalDate.now();
+            return LocalDate.now();
         }
+    }
+
+    private double readFuncionarioSalario(Scanner scanner) {
+        System.out.println("Salário (separador decimal: ponto):");
+        try {
+            return Double.parseDouble(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
+    private void relatorioFuncionariosDerived(Scanner scanner) {
+        String nome = readFuncionarioNome(scanner);
+        LocalDate dataContratacao = readFuncionarioDataContratacao(scanner);
+        Double salario = readFuncionarioSalario(scanner);
 
         Set<Funcionario> funcionarios = funcionarioRepository.findAllByNomeIgnoreCaseLikeAndDataContratacaoLessThanAndSalarioGreaterThan(
+            nome, dataContratacao, salario
+        );
+
+        funcionarios.forEach(System.out::println);
+    }
+
+    private void relatorioFuncionariosJpql(Scanner scanner) {
+        String nome = readFuncionarioNome(scanner);
+        LocalDate dataContratacao = readFuncionarioDataContratacao(scanner);
+        Double salario = readFuncionarioSalario(scanner);
+
+        Set<Funcionario> funcionarios = funcionarioRepository.funcionarioReport(
             nome, dataContratacao, salario
         );
 
