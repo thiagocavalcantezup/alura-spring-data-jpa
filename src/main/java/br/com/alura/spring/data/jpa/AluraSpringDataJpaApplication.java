@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import br.com.alura.spring.data.jpa.services.CargoService;
 import br.com.alura.spring.data.jpa.services.FuncionarioService;
+import br.com.alura.spring.data.jpa.services.RelatorioService;
 import br.com.alura.spring.data.jpa.services.UnidadeTrabalhoService;
 
 @SpringBootApplication
@@ -17,13 +18,16 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
     private CargoService cargoService;
     private FuncionarioService funcionarioService;
     private UnidadeTrabalhoService unidadeTrabalhoService;
+    private RelatorioService relatorioService;
 
     public AluraSpringDataJpaApplication(CargoService cargoService,
                                          FuncionarioService funcionarioService,
-                                         UnidadeTrabalhoService unidadeTrabalhoService) {
+                                         UnidadeTrabalhoService unidadeTrabalhoService,
+                                         RelatorioService relatorioService) {
         this.cargoService = cargoService;
         this.funcionarioService = funcionarioService;
         this.unidadeTrabalhoService = unidadeTrabalhoService;
+        this.relatorioService = relatorioService;
     }
 
     public static void main(String[] args) {
@@ -42,6 +46,7 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
             System.out.println("1 - Cargo");
             System.out.println("2 - Funcionário");
             System.out.println("3 - Unidade de Trabalho");
+            System.out.println("4 - Relatórios");
 
             int action = scanner.nextInt();
             scanner.nextLine();
@@ -55,6 +60,9 @@ public class AluraSpringDataJpaApplication implements CommandLineRunner {
                     break;
                 case 3:
                     unidadeTrabalhoService.start(scanner);
+                    break;
+                case 4:
+                    relatorioService.start(scanner);
                     break;
                 default:
                     keepRunning = false;

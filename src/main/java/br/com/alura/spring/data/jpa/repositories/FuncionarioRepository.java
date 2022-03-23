@@ -1,5 +1,6 @@
 package br.com.alura.spring.data.jpa.repositories;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,6 +17,10 @@ public interface FuncionarioRepository extends CrudRepository<Funcionario, Long>
     Optional<Funcionario> findFirstByCpf(String cpf);
 
     Set<Funcionario> findAllByNomeIgnoreCaseLike(String nome);
+
+    Set<Funcionario> findAllByNomeIgnoreCaseLikeAndDataContratacaoLessThanAndSalarioGreaterThan(String nome,
+                                                                                                LocalDate dataContratacao,
+                                                                                                double salario);
 
     Set<Funcionario> findAllByCargoId(long id);
 
